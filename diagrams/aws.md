@@ -79,7 +79,9 @@ graph TD
 
     style Flink fill:#e13238,stroke:#232f3e,stroke-width:2px,color:#fff
     style Rocks fill:#eeeeee,stroke:#232f3e,stroke-width:1px,color:#000
-    style FlinkApp fill:#fff,stroke:#e13238,stroke-width:2px,stroke-dasharray: 5 5
+    
+    %% Updated FlinkApp Style
+    style FlinkApp fill:#fff5f5,stroke:#e13238,stroke-width:2px,stroke-dasharray: 0
     
     style DMS fill:#3b48cc,stroke:#232f3e,color:#fff
     style Glue fill:#277a2e,stroke:#232f3e,color:#fff
