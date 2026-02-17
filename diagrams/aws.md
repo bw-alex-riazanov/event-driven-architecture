@@ -126,3 +126,6 @@ Throughput: ~100 writes/sec (~260M events/month)
 * **MSK Serverless vs. Provisioned:** Serverless is great for "zero-management," but it carries a high base fee of ~$0.75/hr. Switching to **Provisioned m7g.large** instances can save you over **$400/month** if your load is steady.
 * **Aurora Serverless v2:** For 100 TPS, Aurora is highly efficient, scaling down to 0.5 ACU during idle periods.
 * **Managed Flink:** The minimum cost is 2 KPUs (1 for the application and 1 for orchestration). This is the "luxury" part of the stack that replaces manual Flink cluster maintenance.
+
+Netflix: Processes trillions of events per day using Flink. Peak loads are ~20 million events per second on clusters of hundreds of nodes.
+Alibaba: During sales days (Double 11), their Flink clusters process over 4 billion events per second in total, with latency of less than a second.
