@@ -3,26 +3,26 @@ In this diagram, Microservices A, B, and C act as the writers (producers) on the
 AWS Managed CDC & Enrichment Architecture
 ```mermaid
 graph TD
-    %% Группа Продюсеров
+    %% Producers
     subgraph Producers [Microservices - Write]
         A[Microservice A]
         B[Microservice B]
         C[Microservice C]
     end
 
-    %% Группа Баз Данных
+    %% Databases
     subgraph Storage [Source Databases]
         DB_A[(Aurora A)]
         DB_B[(Aurora B)]
         DB_C[(Aurora C)]
     end
 
-    %% Слой CDC
+    %% CDC
     subgraph Ingestion [Change Data Capture]
         DMS[AWS DMS]
     end
 
-    %% Шина Данных
+    %% Messaging
     subgraph Streaming [Messaging Layer: Amazon MSK]
         direction TB
         subgraph RawTopics [Raw Data]
@@ -33,7 +33,7 @@ graph TD
         end
     end
 
-    %% Процессинг
+    %% Processing
     subgraph Processing [Compute & State]
         direction LR
         subgraph FlinkApp [Managed Service for Apache Flink]
@@ -45,13 +45,13 @@ graph TD
         S3[(Amazon S3<br/>Checkpoints)]
     end
 
-    %% Потребители
+    %% Consumers
     subgraph Consumers [Microservices - Read]
         MS_AB[Microservice AB]
         MS_BC[Microservice BC]
     end
 
-    %% Потоки данных
+    %% Flows
     A --> DB_A
     B --> DB_B
     C --> DB_C
@@ -68,18 +68,22 @@ graph TD
     T_Enriched -->|Enriched A+B| MS_AB
     T_Enriched -->|Enriched B+C| MS_BC
 
-    %% Улучшенная стилизация (AWS Colors & Modern UI)
-    style Aurora fill:#3b48cc,stroke:#232f3e,stroke-width:2px,color:#fff
+    %% Styling
     style DB_A fill:#f90,stroke:#232f3e,color:#fff
     style DB_B fill:#f90,stroke:#232f3e,color:#fff
     style DB_C fill:#f90,stroke:#232f3e,color:#fff
     
-    style MSK fill:#f2f3f3,stroke:#3b48cc,stroke-width:2px
+    style MSK fill:#f2f3f3,stroke:#3b48cc,stroke-width:2px,color:#000
     style T_Raw fill:#3b48cc,stroke:#232f3e,color:#fff
     style T_Enriched fill:#3b48cc,stroke:#232f3e,color:#fff
 
     style Flink fill:#e13238,stroke:#232f3e,stroke-width:2px,color:#fff
-    style Rocks fill:#444,stroke:#
+    style Rocks fill:#eeeeee,stroke:#232f3e,stroke-width:1px,color:#000
+    style FlinkApp fill:#fff,stroke:#e13238,stroke-width:2px,stroke-dasharray: 5 5
+    
+    style DMS fill:#3b48cc,stroke:#232f3e,color:#fff
+    style Glue fill:#277a2e,stroke:#232f3e,color:#fff
+    style S3 fill:#277a2e,stroke:#232f3e,color:#fff
 ```
 
 Key Component Mapping
