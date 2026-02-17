@@ -10,54 +10,53 @@ graph LR
     end
 
     subgraph Storage [Database Layer]
-        Aurora[(Amazon Aurora<br/>PostgreSQL)]
+        DB_A[(Aurora A)]
+        DB_B[(Aurora B)]
+        DB_C[(Aurora C)]
     end
 
-    subgraph Streaming [Ingestion & Transport]
+    subgraph Ingestion [CDC Layer]
         DMS[AWS DMS<br/>CDC / Replication]
-        MSK{{Amazon MSK<br/>Managed Kafka}}
     end
 
-    subgraph Processing [Compute & State Management]
+    subgraph Streaming [Messaging Layer]
+        subgraph MSK [Amazon MSK]
+            T_Raw[Raw Topics<br/>A, B, C]
+            T_Enriched[Enriched Topics<br/>AB, BC]
+        end
+    end
+
+    subgraph Processing [Compute & State]
         subgraph FlinkApp [Managed Service for Apache Flink]
             Flink{Flink Engine}
             Rocks[(RocksDB<br/>Local State)]
             Flink <--> Rocks
         end
-        Glue[AWS Glue<br/>Schema Registry]
-        S3[(Amazon S3<br/>Checkpoints/Savepoints)]
+        S3[(Amazon S3<br/>Checkpoints)]
+        Rocks -.->|Snapshots| S3
     end
 
     subgraph Consumers [Microservices - Read]
-        AB[Microservice AB<br/>Enriched A+B]
-        BC[Microservice BC<br/>Enriched B+C]
+        MS_AB[Microservice AB]
+        MS_BC[Microservice BC]
     end
 
     %% Data Flow
-    A --> Aurora
-    B --> Aurora
-    C --> Aurora
+    A --> DB_A
+    B --> DB_B
+    C --> DB_C
 
-    Aurora -.->|WAL Logs| DMS
-    DMS --> MSK
+    DB_A & DB_B & DB_C -.-> DMS
+    DMS --> T_Raw
     
-    MSK <--> Flink
-    Flink --- Glue
+    T_Raw --> Flink
+    Flink --> T_Enriched
     
-    %% State Persistence
-    Rocks -.->|Async Snapshot| S3
-    
-    Flink -->|Topic AB| AB
-    Flink -->|Topic BC| BC
+    T_Enriched -->|Topic AB| MS_AB
+    T_Enriched -->|Topic BC| MS_BC
 
     %% Styling
-    style Aurora fill:#f90,stroke:#232f3e,stroke-width:2px,color:#fff
-    style MSK fill:#3b48cc,stroke:#232f3e,stroke-width:2px,color:#fff
-    style Flink fill:#e13238,stroke:#232f3e,stroke-width:2px,color:#fff
-    style DMS fill:#3b48cc,stroke:#232f3e,stroke-width:1px,color:#fff
-    style Rocks fill:#444,stroke:#232f3e,stroke-width:1px,color:#fff
-    style S3 fill:#277a2e,stroke:#232f3e,stroke-width:1px,color:#fff
-    style FlinkApp fill:#fdfdfd,stroke:#e13238,stroke-dasharray: 5 5
+    style DB_A fill:#f90,stroke:#23
 ```
 
 Key Component Mapping
