@@ -18,9 +18,14 @@ graph LR
         MSK{{Amazon MSK<br/>Managed Kafka}}
     end
 
-    subgraph Processing [Compute & Schema]
-        Flink{Managed Service for<br/>Apache Flink}
+    subgraph Processing [Compute & State Management]
+        subgraph FlinkApp [Managed Service for Apache Flink]
+            Flink{Flink Engine}
+            Rocks[(RocksDB<br/>Local State)]
+            Flink <--> Rocks
+        end
         Glue[AWS Glue<br/>Schema Registry]
+        S3[(Amazon S3<br/>Checkpoints/Savepoints)]
     end
 
     subgraph Consumers [Microservices - Read]
@@ -39,6 +44,9 @@ graph LR
     MSK <--> Flink
     Flink --- Glue
     
+    %% State Persistence
+    Rocks -.->|Async Snapshot| S3
+    
     Flink -->|Topic AB| AB
     Flink -->|Topic BC| BC
 
@@ -47,6 +55,9 @@ graph LR
     style MSK fill:#3b48cc,stroke:#232f3e,stroke-width:2px,color:#fff
     style Flink fill:#e13238,stroke:#232f3e,stroke-width:2px,color:#fff
     style DMS fill:#3b48cc,stroke:#232f3e,stroke-width:1px,color:#fff
+    style Rocks fill:#444,stroke:#232f3e,stroke-width:1px,color:#fff
+    style S3 fill:#277a2e,stroke:#232f3e,stroke-width:1px,color:#fff
+    style FlinkApp fill:#fdfdfd,stroke:#e13238,stroke-dasharray: 5 5
 ```
 
 Key Component Mapping
